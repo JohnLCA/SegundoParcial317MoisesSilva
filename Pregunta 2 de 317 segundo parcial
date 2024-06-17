@@ -1,1 +1,326 @@
+Claro, aquí tienes un proceso ETL (Extracción, Transformación y Carga) paso a paso, con variables en español para mayor claridad. Utilizaremos la base de datos AdventureWorks como origen y nuestro propio Data Warehouse, MiDW, como destino.
 
+1. Diseño del Data Warehouse (MiDW)
+Tablas de Dimensión:
+DimProducto: Información sobre productos.
+DimCliente: Información sobre clientes.
+DimFecha: Información sobre fechas.
+DimVendedor: Información sobre vendedores.
+Tabla de Hechos:
+FactVentas: Información sobre ventas.
+2. Proceso ETL
+A. Extracción
+Primero, extraemos los datos de las tablas relevantes de la base de datos AdventureWorks.
+
+DimProducto
+
+-- Consulta de extracción para productos para ello vemos a varios de sus elementos para visualizarlos
+SELECT
+    ProductID,
+    Name,
+    ProductNumber,
+    Color,
+    StandardCost,
+    ListPrice,
+    Size,
+    Weight,
+    ProductCategoryID,
+    ProductModelID,
+    SellStartDate,
+    SellEndDate,
+    DiscontinuedDate
+FROM
+    Production.Product;
+
+B. Transformación
+Transformamos los datos para adecuarlos a la estructura de nuestro Data Warehouse.
+
+DimProducto
+
+-- Transformación para la tabla DimProducto
+SELECT
+    ProductID AS ProductoClave,
+    Name AS NombreProducto,
+    ProductNumber AS NumeroProducto,
+    ISNULL(Color, 'No Definido') AS Color,
+    StandardCost AS CostoEstandar,
+    ListPrice AS PrecioLista,
+    ISNULL(Size, 'No Definido') AS Tamano,
+    ISNULL(Weight, 0) AS Peso,
+    ProductCategoryID AS CategoriaProductoID,
+    ProductModelID AS ModeloProductoID,
+    CAST(SellStartDate AS DATE) AS FechaInicioVenta,
+    CAST(SellEndDate AS DATE) AS FechaFinVenta,
+    CAST(DiscontinuedDate AS DATE) AS FechaDescontinuacion
+FROM
+    Production.Product;
+
+C. Carga
+Finalmente, cargamos los datos transformados en nuestro Data Warehouse.
+
+DimProducto
+
+-- Carga de datos en la tabla DimProducto
+INSERT INTO DimProducto (ProductoClave, NombreProducto, NumeroProducto, Color, CostoEstandar, PrecioLista, Tamano, Peso, CategoriaProductoID, ModeloProductoID, FechaInicioVenta, FechaFinVenta, FechaDescontinuacion)
+SELECT
+    ProductID AS ProductoClave,
+    Name AS NombreProducto,
+    ProductNumber AS NumeroProducto,
+    ISNULL(Color, 'No Definido') AS Color,
+    StandardCost AS CostoEstandar,
+    ListPrice AS PrecioLista,
+    ISNULL(Size, 'No Definido') AS Tamano,
+    ISNULL(Weight, 0) AS Peso,
+    ProductCategoryID AS CategoriaProductoID,
+    ProductModelID AS ModeloProductoID,
+    CAST(SellStartDate AS DATE) AS FechaInicioVenta,
+    CAST(SellEndDate AS DATE) AS FechaFinVenta,
+    CAST(DiscontinuedDate AS DATE) AS FechaDescontinuacion
+FROM
+    Production.Product;
+
+
+Paso a Paso del Proceso ETL
+Extracción: Obtener datos de la base de datos fuente.
+
+Consulta: Realizar una consulta SQL para extraer los datos necesarios desde la base de datos AdventureWorks.
+Ejemplo: Seleccionar datos de la tabla Production.Product para la dimensión de productos.
+Transformación: Modificar y adecuar los datos extraídos a la estructura del Data Warehouse.
+
+Normalización: Reemplazar valores nulos con 'No Definido' o 0.
+Renombrar Campos: Asignar nombres de columnas que sean más descriptivos y acordes al Data Warehouse.
+Conversión de Datos: Convertir tipos de datos si es necesario, por ejemplo, de DATETIME a DATE.
+Carga: Insertar los datos transformados en las tablas del Data Warehouse.
+
+Inserción: Utilizar la sentencia INSERT INTO para cargar los datos en las tablas de dimensión y hechos.
+Ejemplo: Insertar datos en la tabla DimProducto de MiDW.
+
+Ejemplo Completo del Proceso ETL
+1. Crear Tablas en MiDW
+
+
+-- Crear tabla DimProducto
+CREATE TABLE DimProducto (
+    ProductoClave INT PRIMARY KEY,
+    NombreProducto NVARCHAR(100),
+    NumeroProducto NVARCHAR(25),
+    Color NVARCHAR(15),
+    CostoEstandar DECIMAL(19, 4),
+    PrecioLista DECIMAL(19, 4),
+    Tamano NVARCHAR(10),
+    Peso DECIMAL(8, 2),
+    CategoriaProductoID INT,
+    ModeloProductoID INT,
+    FechaInicioVenta DATE,
+    FechaFinVenta DATE,
+    FechaDescontinuacion DATE
+);
+
+-- Crear tabla DimCliente
+CREATE TABLE DimCliente (
+    ClienteClave INT PRIMARY KEY,
+    NombreCliente NVARCHAR(100),
+    EmailCliente NVARCHAR(100),
+    TelefonoCliente NVARCHAR(25),
+    DireccionCliente NVARCHAR(255)
+);
+
+-- Crear tabla DimFecha
+CREATE TABLE DimFecha (
+    FechaClave DATE PRIMARY KEY,
+    Anio INT,
+    Mes INT,
+    Dia INT,
+    NombreMes NVARCHAR(15),
+    NombreDia NVARCHAR(15),
+    Trimestre INT,
+    AnioFiscal INT
+);
+
+-- Crear tabla DimVendedor
+CREATE TABLE DimVendedor (
+    VendedorClave INT PRIMARY KEY,
+    NombreVendedor NVARCHAR(100),
+    EmailVendedor NVARCHAR(100),
+    TelefonoVendedor NVARCHAR(25)
+);
+
+-- Crear tabla FactVentas
+CREATE TABLE FactVentas (
+    VentaClave INT IDENTITY(1,1) PRIMARY KEY,
+    FechaClave DATE,
+    ClienteClave INT,
+    ProductoClave INT,
+    VendedorClave INT,
+    Cantidad INT,
+    PrecioUnitario DECIMAL(19, 4),
+    CostoUnitario DECIMAL(19, 4),
+    TotalVenta DECIMAL(19, 4)
+);
+
+
+2. Proceso ETL en SQL
+A. Extracción, Transformación y Carga para DimProducto
+
+
+-- Extracción y Transformación
+SELECT
+    ProductID AS ProductoClave,
+    Name AS NombreProducto,
+    ProductNumber AS NumeroProducto,
+    ISNULL(Color, 'No Definido') AS Color,
+    StandardCost AS CostoEstandar,
+    ListPrice AS PrecioLista,
+    ISNULL(Size, 'No Definido') AS Tamano,
+    ISNULL(Weight, 0) AS Peso,
+    ProductCategoryID AS CategoriaProductoID,
+    ProductModelID AS ModeloProductoID,
+    CAST(SellStartDate AS DATE) AS FechaInicioVenta,
+    CAST(SellEndDate AS DATE) AS FechaFinVenta,
+    CAST(DiscontinuedDate AS DATE) AS FechaDescontinuacion
+FROM
+    Production.Product;
+
+-- Carga
+INSERT INTO DimProducto (ProductoClave, NombreProducto, NumeroProducto, Color, CostoEstandar, PrecioLista, Tamano, Peso, CategoriaProductoID, ModeloProductoID, FechaInicioVenta, FechaFinVenta, FechaDescontinuacion)
+SELECT
+    ProductID AS ProductoClave,
+    Name AS NombreProducto,
+    ProductNumber AS NumeroProducto,
+    ISNULL(Color, 'No Definido') AS Color,
+    StandardCost AS CostoEstandar,
+    ListPrice AS PrecioLista,
+    ISNULL(Size, 'No Definido') AS Tamano,
+    ISNULL(Weight, 0) AS Peso,
+    ProductCategoryID AS CategoriaProductoID,
+    ProductModelID AS ModeloProductoID,
+    CAST(SellStartDate AS DATE) AS FechaInicioVenta,
+    CAST(SellEndDate AS DATE) AS FechaFinVenta,
+    CAST(DiscontinuedDate AS DATE) AS FechaDescontinuacion
+FROM
+    Production.Product;
+
+
+B. Extracción, Transformación y Carga para DimCliente
+
+
+-- Extracción y Transformación
+SELECT
+    CustomerID AS ClienteClave,
+    FirstName + ' ' + LastName AS NombreCliente,
+    EmailAddress AS EmailCliente,
+    Phone AS TelefonoCliente,
+    AddressLine1 + ', ' + City + ', ' + StateProvinceName + ', ' + PostalCode AS DireccionCliente
+FROM
+    Sales.vIndividualCustomer;
+
+-- Carga
+INSERT INTO DimCliente (ClienteClave, NombreCliente, EmailCliente, TelefonoCliente, DireccionCliente)
+SELECT
+    CustomerID AS ClienteClave,
+    FirstName + ' ' + LastName AS NombreCliente,
+    EmailAddress AS EmailCliente,
+    Phone AS TelefonoCliente,
+    AddressLine1 + ', ' + City + ', ' + StateProvinceName + ', ' + PostalCode AS DireccionCliente
+FROM
+    Sales.vIndividualCustomer;
+
+
+C. Extracción, Transformación y Carga para DimFecha
+
+
+-- Extracción y Transformación
+SELECT DISTINCT
+    CAST(OrderDate AS DATE) AS FechaClave,
+    YEAR(OrderDate) AS Anio,
+    MONTH(OrderDate) AS Mes,
+    DAY(OrderDate) AS Dia,
+    DATENAME(MONTH, OrderDate) AS NombreMes,
+    DATENAME(WEEKDAY, OrderDate) AS NombreDia,
+    DATEPART(QUARTER, OrderDate) AS Trimestre,
+    YEAR(OrderDate) AS AnioFiscal
+FROM
+    Sales.SalesOrderHeader;
+
+-- Carga
+INSERT INTO DimFecha (FechaClave, Anio, Mes, Dia, NombreMes, NombreDia, Trimestre, AnioFiscal)
+SELECT DISTINCT
+    CAST(OrderDate AS DATE) AS FechaClave,
+    YEAR(OrderDate) AS Anio,
+    MONTH(OrderDate) AS Mes,
+    DAY(OrderDate) AS Dia,
+    DATENAME(MONTH, OrderDate) AS NombreMes,
+    DATENAME(WEEKDAY, OrderDate) AS NombreDia,
+    DATEPART(QUARTER, OrderDate) AS Trimestre,
+    YEAR(OrderDate) AS AnioFiscal
+FROM
+    Sales.SalesOrderHeader;
+
+
+D. Extracción, Transformación y Carga para DimVendedor
+
+
+-- Extracción y Transformación
+SELECT
+    BusinessEntityID AS VendedorClave,
+    FirstName + ' ' + LastName AS NombreVendedor,
+    EmailAddress AS EmailVendedor,
+    PhoneNumber AS TelefonoVendedor
+FROM
+    Person.Person
+    INNER JOIN HumanResources.Employee ON Person.BusinessEntityID = Employee.BusinessEntityID
+    INNER JOIN Person.EmailAddress ON Person.BusinessEntityID = EmailAddress.BusinessEntityID
+    INNER JOIN Person.PersonPhone ON Person.BusinessEntityID = PersonPhone.BusinessEntityID;
+
+-- Carga
+INSERT INTO DimVendedor (VendedorClave, NombreVendedor, EmailVendedor, TelefonoVendedor)
+SELECT
+    BusinessEntityID AS VendedorClave,
+    FirstName + ' ' + LastName AS NombreVendedor,
+    EmailAddress AS EmailVendedor,
+    PhoneNumber AS TelefonoVendedor
+FROM
+    Person.Person
+    INNER JOIN HumanResources.Employee ON Person.BusinessEntityID = Employee.BusinessEntityID
+    INNER JOIN Person.EmailAddress ON Person.BusinessEntityID = EmailAddress.BusinessEntityID
+    INNER JOIN Person.PersonPhone ON Person.BusinessEntityID = PersonPhone.BusinessEntityID;
+
+
+E. Extracción, Transformación y Carga para FactVentas
+
+
+
+-- Extracción y Transformación
+SELECT
+    CAST(OrderDate AS DATE) AS FechaClave,
+    CustomerID AS ClienteClave,
+    ProductID AS ProductoClave,
+    SalesPersonID AS VendedorClave,
+    OrderQty AS Cantidad,
+    UnitPrice AS PrecioUnitario,
+    UnitPriceDiscount AS CostoUnitario,
+    (UnitPrice * OrderQty) AS TotalVenta
+FROM
+    Sales.SalesOrderDetail
+    INNER JOIN Sales.SalesOrderHeader ON SalesOrderDetail.SalesOrderID = SalesOrderHeader.SalesOrderID;
+
+-- Carga
+INSERT INTO FactVentas (FechaClave, ClienteClave, ProductoClave, VendedorClave, Cantidad, PrecioUnitario, CostoUnitario, TotalVenta)
+SELECT
+    CAST(OrderDate AS DATE) AS FechaClave,
+    CustomerID AS ClienteClave,
+    ProductID AS ProductoClave,
+    SalesPersonID AS VendedorClave,
+    OrderQty AS Cantidad,
+    UnitPrice AS PrecioUnitario,
+    UnitPriceDiscount AS CostoUnitario,
+    (UnitPrice * OrderQty) AS TotalVenta
+FROM
+    Sales.SalesOrderDetail
+    INNER JOIN Sales.SalesOrderHeader ON SalesOrderDetail.SalesOrderID = SalesOrderHeader.SalesOrderID;
+
+
+Conclusión
+Este es un ejemplo básico de cómo realizar un proceso ETL para mover datos desde la base de datos AdventureWorks a tu propio Data Warehouse, MiDW. 
+Hemos cubierto la extracción de datos, su transformación para adecuarse a la estructura de MiDW y la carga final de estos datos. 
+Las herramientas que puedes usar para este proceso incluyen SQL Server Integration Services (SSIS), Talend y Pentaho Data Integration (Kettle), entre otras.
