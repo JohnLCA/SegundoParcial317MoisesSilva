@@ -1,1 +1,38 @@
+// pregunta Nro 3 de 317 segundo parcial -- Lic. Moises Silva---
+
+
+// importamos las librerias cv2 y numpy para el procesamiento de las imagenes
+
+import cv2
+import numpy as np
+
+# realizamo la carga para las dos imágenes
+imagenUno = cv2.imread('primeraImagen.jpg')
+imagenDos = cv2.imread('segundaImagen.jpg')
+
+# ahora verificamos que ambas imágenes se han cargado correctamente
+if imagenUno is None or imagenDos is None:
+    print("Error por que no se encontraron las imágenes y no cargan")
+    exit()
+
+# nos aseguraremos que ambas imágenes tienen el mismo tamaño
+if imagenUno.shape != imagenDos.shape:
+    print("Las imágenes deben tener el mismo tamaño y número de canales")
+    exit()
+
+# Suma de las imágenes
+sumaImagen = cv2.add(imagenUno, imagenDos)
+
+# Resta de las imágenes
+restaImagen = cv2.subtract(imagenUno, imagenDos)
+
+# hacemos la visualizacion de las imágenes originales y los resultados
+cv2.imshow('Imagen Nro 1', imagenUno)
+cv2.imshow('Imagen Nro 2', imagenDos)
+cv2.imshow('Suma', sumaImagen)
+cv2.imshow('Resta', restaImagen)
+
+# por ultimo esperamos que se presione una tecla para cerrar las ventanas
+cv2.waitKey(0)
+cv2.destroyAllWindows()
 
