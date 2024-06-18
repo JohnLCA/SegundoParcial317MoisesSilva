@@ -1,0 +1,42 @@
+// pregunta Nro 2 de 317 segundo parcial ---Lic. Moises Silva ----
+
+// Importamos las bibliotecas correspondientes la primara para la manipulacion de grafos y estructuras dimanicas y complejos en este caso 
+// la matriz sparce la biblioteca networkx 
+// el spicy para la matematica , ciencias y es importante para las matrices dispersas por el modulo sparce
+
+import networkx as nx
+from scipy.sparse import csr_matrix
+
+// creamos el primer grafico para la operacion
+
+# Crear el primer gráfico
+primer_grafo = nx.Graph()
+primer_grafo.add_edges_from([(0, 1), (1, 2), (2, 3)])
+
+// creamos el segundo grafico
+
+# Crear el segundo gráfico
+segundo_grafo = nx.Graph()
+segundo_grafo.add_edges_from([(0, 1), (1, 3), (3, 4)])
+
+// hacemos las matrices adyacentes 
+
+# hacemos para tener las matrices de adyacencia
+# la matriz adyacente del primer grafico
+matriz_adyacencia_primer_grafo = nx.adjacency_matrix(primer_grafo)
+# del segundo grafico
+matriz_adyacencia_segundo_grafo = nx.adjacency_matrix(segundo_grafo)
+
+
+# convertimos  las matrices de adyacencia a formato CSR (Compressed Sparse Row)
+matriz_dispersa_primer_grafo = csr_matrix(matriz_adyacencia_primer_grafo)
+matriz_dispersa_segundo_grafo = csr_matrix(matriz_adyacencia_segundo_grafo)
+
+# imprimimos las matrices dispersas 
+
+print("Matriz dispersa del primer gráfico:")
+print(matriz_dispersa_primer_grafo)
+
+print("Matriz dispersa del segundo gráfico:")
+print(matriz_dispersa_segundo_grafo)
+
