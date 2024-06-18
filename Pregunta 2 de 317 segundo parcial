@@ -1,18 +1,12 @@
-Claro, aquí tienes un proceso ETL (Extracción, Transformación y Carga) paso a paso, con variables en español para mayor claridad. Utilizaremos la base de datos AdventureWorks como origen y nuestro propio Data Warehouse, MiDW, como destino.
+// aqui podemos oservar un proceso ETL (Extracción, Transformación y Carga) paso a paso, con variables en español para mayor claridad. 
+//Utilizaremos la base de datos AdventureWorks como origen y nuestro propio Data Warehouse, MiDW, como destino.
 
-1. Diseño del Data Warehouse (MiDW)
-Tablas de Dimensión:
-DimProducto: Información sobre productos.
-DimCliente: Información sobre clientes.
-DimFecha: Información sobre fechas.
-DimVendedor: Información sobre vendedores.
-Tabla de Hechos:
-FactVentas: Información sobre ventas.
-2. Proceso ETL
-A. Extracción
-Primero, extraemos los datos de las tablas relevantes de la base de datos AdventureWorks.
+//primero  Diseño del Data Warehouse (MiDW)
 
-DimProducto
+// segunfo  Proceso ETL
+// realizamos A. Extracción
+//Primero, extraemos los datos de las tablas relevantes de la base de datos AdventureWorks.
+
 
 -- Consulta de extracción para productos para ello vemos a varios de sus elementos para visualizarlos
 SELECT
@@ -32,10 +26,9 @@ SELECT
 FROM
     Production.Product;
 
-B. Transformación
-Transformamos los datos para adecuarlos a la estructura de nuestro Data Warehouse.
+// ahora  vemos B. Transformación
+//Transformamos los datos para adecuarlos a la estructura de nuestro Data Warehouse.
 
-DimProducto
 
 -- Transformación para la tabla DimProducto
 SELECT
@@ -55,10 +48,9 @@ SELECT
 FROM
     Production.Product;
 
-C. Carga
-Finalmente, cargamos los datos transformados en nuestro Data Warehouse.
+// ahora lo que es la C. Carga
+//Finalmente, cargamos los datos transformados en nuestro Data Warehouse.
 
-DimProducto
 
 -- Carga de datos en la tabla DimProducto
 INSERT INTO DimProducto (ProductoClave, NombreProducto, NumeroProducto, Color, CostoEstandar, PrecioLista, Tamano, Peso, CategoriaProductoID, ModeloProductoID, FechaInicioVenta, FechaFinVenta, FechaDescontinuacion)
@@ -80,23 +72,22 @@ FROM
     Production.Product;
 
 
-Paso a Paso del Proceso ETL
-Extracción: Obtener datos de la base de datos fuente.
+//vemos los pasos del Proceso ETL
+//Extracción: Obtener datos de la base de datos fuente.
 
-Consulta: Realizar una consulta SQL para extraer los datos necesarios desde la base de datos AdventureWorks.
-Ejemplo: Seleccionar datos de la tabla Production.Product para la dimensión de productos.
-Transformación: Modificar y adecuar los datos extraídos a la estructura del Data Warehouse.
+//la Consulta que nos hace realizar una consulta SQL para extraer los datos necesarios desde la base de datos AdventureWorks.
+//lo que es Seleccionar datos de la tabla Production.Product para la dimensión de productos.
+// la transformación, lo que es  Modificar y adecuar los datos extraídos a la estructura del Data Warehouse.
+// la normalización que es reemplazar valores nulos con 'No Definido' o 0.
+//renombrar campos es  asignar nombres de columnas que sean más descriptivos y acordes al Data Warehouse.
+// pues la conversión de datos hace convertir tipos de datos si es necesario, por ejemplo, de DATETIME a DATE.
+//la carga es insertar los datos transformados en las tablas del Data Warehouse.
 
-Normalización: Reemplazar valores nulos con 'No Definido' o 0.
-Renombrar Campos: Asignar nombres de columnas que sean más descriptivos y acordes al Data Warehouse.
-Conversión de Datos: Convertir tipos de datos si es necesario, por ejemplo, de DATETIME a DATE.
-Carga: Insertar los datos transformados en las tablas del Data Warehouse.
+//interseccion que hace utilizar la sentencia INSERT INTO para cargar los datos en las tablas de dimensión y hechos.
+// Insertar datos en la tabla DimProducto de MiDW.
 
-Inserción: Utilizar la sentencia INSERT INTO para cargar los datos en las tablas de dimensión y hechos.
-Ejemplo: Insertar datos en la tabla DimProducto de MiDW.
-
-Ejemplo Completo del Proceso ETL
-1. Crear Tablas en MiDW
+// qui el proceso ETL
+//primero creamos las tablas en MiDW
 
 
 -- Crear tabla DimProducto
@@ -159,8 +150,8 @@ CREATE TABLE FactVentas (
 );
 
 
-2. Proceso ETL en SQL
-A. Extracción, Transformación y Carga para DimProducto
+// En segundo el Proceso ETL en SQL
+// ahora vemos A. Extracción, Transformación y Carga para DimProducto
 
 
 -- Extracción y Transformación
@@ -201,7 +192,7 @@ FROM
     Production.Product;
 
 
-B. Extracción, Transformación y Carga para DimCliente
+//Veamos que ahora B. Extracción, Transformación y Carga para DimCliente
 
 
 -- Extracción y Transformación
@@ -226,7 +217,7 @@ FROM
     Sales.vIndividualCustomer;
 
 
-C. Extracción, Transformación y Carga para DimFecha
+//Veamos que lo siguiente es C. Extracción, Transformación y Carga para DimFecha
 
 
 -- Extracción y Transformación
@@ -257,7 +248,7 @@ FROM
     Sales.SalesOrderHeader;
 
 
-D. Extracción, Transformación y Carga para DimVendedor
+//Tenemos despues D. Extracción, Transformación y Carga para DimVendedor
 
 
 -- Extracción y Transformación
@@ -286,7 +277,7 @@ FROM
     INNER JOIN Person.PersonPhone ON Person.BusinessEntityID = PersonPhone.BusinessEntityID;
 
 
-E. Extracción, Transformación y Carga para FactVentas
+// ahora lo que es la E. Extracción, Transformación y Carga para FactVentas
 
 
 
@@ -320,7 +311,5 @@ FROM
     INNER JOIN Sales.SalesOrderHeader ON SalesOrderDetail.SalesOrderID = SalesOrderHeader.SalesOrderID;
 
 
-Conclusión
-Este es un ejemplo básico de cómo realizar un proceso ETL para mover datos desde la base de datos AdventureWorks a tu propio Data Warehouse, MiDW. 
-Hemos cubierto la extracción de datos, su transformación para adecuarse a la estructura de MiDW y la carga final de estos datos. 
-Las herramientas que puedes usar para este proceso incluyen SQL Server Integration Services (SSIS), Talend y Pentaho Data Integration (Kettle), entre otras.
+//coon este es un ejercicio de cómo realizar un proceso ETL para mover datos desde la base de datos AdventureWorks a tu propio Data Warehouse, MiDW. 
+// hacemos la vizualizacion de la extracción de datos, su transformación para adecuarse a la estructura de MiDW y la carga final de estos datos. 
