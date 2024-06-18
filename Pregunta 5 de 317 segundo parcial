@@ -1,1 +1,31 @@
+// pregunta Nro 5 de 317 segundo examen  --- Lic. Moises Silva ---
+
+# importamos las bibliotecas pero aca incluimos multiprocesing 
+
+import numpy as np
+from scipy.sparse import csr_matrix
+from multiprocessing import Pool
+
+# aca definimos el tamaño de las matrices y la densidad
+filas, columnas = 1000, 1000
+densidad = 0.01
+
+#  creamos las matrices disperzas aleatorias matriz1 y matriz2
+matriz1 = csr_matrix(np.random.rand(filas, columnas) < densidad, dtype=np.float64)
+matriz2 = csr_matrix(np.random.rand(filas, columnas) < densidad, dtype=np.float64)
+
+# realizamos la mulripllicaion de matriz1 y la matriz2
+def multiplicar_fila(fila):
+    return A[fila, :].dot(B)
+
+#hacemos uso de pool para multilicalar las filas en paralelo
+
+if __name__ == "__main__":
+    with Pool() as pool:
+        resultado = pool.map(multiplicar_fila, range(filas))
+    # Convertir el resultado a una matriz dispersa
+    matrizSolucion = csr_matrix(resultado)
+# una vez guardadno el resultado en una matriz ahora lo imprimimos
+
+    print(matrizSolucion)
 
