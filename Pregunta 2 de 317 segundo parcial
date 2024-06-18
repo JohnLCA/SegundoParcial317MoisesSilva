@@ -1,5 +1,5 @@
 
-// Pregunta 2 de 317 del segundo parcial --- Lic. Moises Silva---- 
+// Pregunta 2 de 317 del segundo parcial --- Lic. Moises Silva----
 
 // aqui podemos oservar un proceso ETL (Extracción, Transformación y Carga) paso a paso, con variables en español para mayor claridad. 
 //Utilizaremos la base de datos AdventureWorks como origen y nuestro propio Data Warehouse, MiDW, como destino.
