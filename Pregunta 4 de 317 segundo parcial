@@ -1,1 +1,23 @@
+// pregunta 4 de 317 segundo parcial --- Lic. Moises Silva ---
+
+//Importamos las bibliotecas necesarias (numpy y scipy.sparse), asi como las anteriores que usammos ya antes
+
+import numpy as np
+from scipy.sparse import csr_matrix
+
+# aqui es donde definimos lo que es el tamaño de las matrices que es 1000 x 1000
+rows, cols = 1000, 1000
+
+# ahora creamos las matrices dispersas aleatorias
+# pero utilizamos una matriz dispersa con una densidad del 0.01 (1% de los elementos son diferentes de cero)
+density = 0.01
+matriz1 = csr_matrix(np.random.rand(rows, cols) < density, dtype=np.float64)
+matriz2 = csr_matrix(np.random.rand(rows, cols) < density, dtype=np.float64)
+
+# ya entonces despues de definir lo demas multiplicamos las matrices dispersas que son matriz1 y matriz2 usando el metodo dot.
+# lo guardamos en otra matriz
+matrizMultiplicacion = matriz1.dot(matriz2)
+
+# imprimimos el resultado de la multiplicación
+print(matrizMultiplicacion)
 
