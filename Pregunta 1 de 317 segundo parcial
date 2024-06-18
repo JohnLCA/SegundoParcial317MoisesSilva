@@ -1,1 +1,198 @@
+// pregunta Nro 1 de 317 segundo examen --- Lic. Moises Silva ---
+
+# hacemos una carpeta diferente para esto 
+
+namespace MyApp.Entities
+{
+    public class Student
+    {
+        public int Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+    }
+}
+
+
+# creamos las capas dataacess y StudentReposotori
+
+using MyApp.Entities;
+using System.Collections.Generic;
+
+namespace MyApp.DataAccess
+{
+    public class StudentRepository
+    {
+        private static List<Student> students = new List<Student>
+        {
+            new Student { Id = 1, FirstName = "John", LastName = "Doe", Email = "john.doe@example.com" },
+            new Student { Id = 2, FirstName = "Jane", LastName = "Doe", Email = "jane.doe@example.com" }
+        };
+
+        public List<Student> GetAllStudents()
+        {
+            return students;
+        }
+
+        public Student GetStudentById(int id)
+        {
+            return students.Find(student => student.Id == id);
+        }
+    }
+}
+
+# dentro de la carpeta bussinesLogic creamos una una clase StudentService 
+
+using MyApp.DataAccess;
+using MyApp.Entities;
+using System.Collections.Generic;
+
+namespace MyApp.BusinessLogic
+{
+    public class StudentService
+    {
+        private readonly StudentRepository _studentRepository;
+
+        public StudentService()
+        {
+            _studentRepository = new StudentRepository();
+        }
+
+        public List<Student> GetAllStudents()
+        {
+            return _studentRepository.GetAllStudents();
+        }
+
+        public Student GetStudentById(int id)
+        {
+            return _studentRepository.GetStudentById(id);
+        }
+    }
+}
+
+
+# creamos un nuevo controlador en la caprta Controllers que se llama StudentControllers.cs
+
+using Microsoft.AspNetCore.Mvc;
+using MyApp.BusinessLogic;
+using MyApp.Entities;
+
+namespace MyApp.Controllers
+{
+    public class StudentController : Controller
+    {
+        private readonly StudentService _studentService;
+
+        public StudentController()
+        {
+            _studentService = new StudentService();
+        }
+
+        public IActionResult Index()
+        {
+            var students = _studentService.GetAllStudents();
+            return View(students);
+        }
+
+        public IActionResult Details(int id)
+        {
+            var student = _studentService.GetStudentById(id);
+            if (student == null)
+            {
+                return NotFound();
+            }
+            return View(student);
+        }
+    }
+}
+
+
+# añadimos vistas para index y details en la carpeta Student para visualizar los datos
+
+@model IEnumerable<MyApp.Entities.Student>
+
+<h2>Students</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var student in Model)
+    {
+        <tr>
+            <td>@student.FirstName</td>
+            <td>@student.LastName</td>
+            <td>@student.Email</td>
+            <td><a href="/Student/Details/@student.Id">Details</a></td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+
+# ahora para datails 
+
+@model MyApp.Entities.Student
+
+<h2>Student Details</h2>
+<div>
+    <h4>Student</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            First Name
+        </dt>
+        <dd class="col-sm-10">
+            @Model.FirstName
+        </dd>
+        <dt class="col-sm-2">
+            Last Name
+        </dt>
+        <dd class="col-sm-10">
+            @Model.LastName
+        </dd>
+        <dt class="col-sm-2">
+            Email
+        </dt>
+        <dd class="col-sm-10">
+            @Model.Email
+        </dd>
+    </dl>
+    <div>
+        <a href="/Student">Back to List</a>
+    </div>
+</div>
+
+# abrimos  Startup.cs y configura la ruta predeterminada para que apunte al controlador StudentController
+
+public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+{
+    if (env.IsDevelopment())
+    {
+        app.UseDeveloperExceptionPage();
+    }
+    else
+    {
+        app.UseExceptionHandler("/Home/Error");
+        app.UseHsts();
+    }
+    app.UseHttpsRedirection();
+    app.UseStaticFiles();
+    app.UseRouting();
+    app.UseAuthorization();
+    app.UseEndpoints(endpoints =>
+    {
+        endpoints.MapControllerRoute(
+            name: "default",
+            pattern: "{controller=Student}/{action=Index}/{id?}");
+    });
+}
+
+# para no cometer errores ejecuta la aplicación desde Visual Studio.
+# tenemos aue navegar a https://localhost:<port>/Student para ver la lista de estudiantes y sus detalles.
 
